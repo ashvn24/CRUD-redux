@@ -110,7 +110,6 @@ class UserImageView(APIView):
             raise AuthenticationFailed("Not authorized")
         except jwt.InvalidTokenError:
             raise AuthenticationFailed("Invalid token")
-        
     def post(self, request, *args, **kwargs):
         posts_serializer = ImageSerializer(data=request.data)
         if posts_serializer.is_valid():
