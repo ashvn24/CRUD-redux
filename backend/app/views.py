@@ -94,11 +94,23 @@ class UserImageView(APIView):
     parser_classes = (MultiPartParser, FormParser)
     
     def get(self, request, *args, **kwargs):
-        user_id = request.data['user']
-        image = UserImage.objects.filter(user=user_id)
-        serializer = ImageSerializer(image, many=True)
-        return Response(serializer.data)
+        auth_header = request.headers.get('Authorization')
 
+        if not auth_header or 'Bearer ' not in auth_header:
+            raise AuthenticationFailed("Not authorized")
+
+        token = auth_header.split('Bearer ')[1]
+        try:
+            payload = jwt.decode(token, 'secret', algorithms=["HS256"])
+            image = UserImage.objects.filter(user=payload['id'])
+            serializer = ImageSerializer(image, many=True)
+            return Response(serializer.data)
+
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed("Not authorized")
+        except jwt.InvalidTokenError:
+            raise AuthenticationFailed("Invalid token")
+        
     def post(self, request, *args, **kwargs):
         posts_serializer = ImageSerializer(data=request.data)
         if posts_serializer.is_valid():

@@ -17,9 +17,6 @@ const initialState = {
     allUsers: [],
     admintoken: '',
 
-
-    data:0,
-
 }
 
 

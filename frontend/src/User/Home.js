@@ -13,6 +13,7 @@ function Home() {
 
   const [editMode, setEditMode] = useState(false);
   const [image, setImage] = useState('')
+  const [posts, setPosts] = useState('')
   useEffect(() => {
       (async () => {
           try {
@@ -46,6 +47,7 @@ function Home() {
               if (!response.ok) {
                   throw new Error('Network response was not ok');
               }
+              let a = imagePost()
 
           } catch (error) {
               console.error('Error while fetching user data:', error);
@@ -53,7 +55,26 @@ function Home() {
       })();
   }, [token, dispatch]);
 
-
+    const imagePost =async()=>{
+      try {
+        const res = await fetch('http://127.0.0.1:8000/posts',{
+          method:'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token.jwt}`
+        },
+        credentials: 'include'
+        })
+        let posts=await res.json();
+        setPosts([...posts])
+        console.log('---'+posts);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+      
+    
+  
   
 
 
